@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model RssSource {
+  id              Int           @id @default(autoincrement())
+  name            String
+  url             String        @unique
+  category        String
+  authorityWeight Int           @default(5)
+  isActive        Boolean       @default(true)
+  lastFetchedAt   DateTime?
+  lastFetchStatus String?
+  createdAt       DateTime      @default(now())
+  fetchLogs       FetchLog[]
+  articles        NewsArticle[]
+}
+
+model DailyDigest {
+  id            Int           @id @default(autoincrement())
+  date          DateTime      @unique @db.Date
+  generatedAt   DateTime      @default(now())
+  totalArticles Int
+  status        String
+  errorMessage  String?
+  articles      NewsArticle[]
+}
+
+model NewsArticle {
+  id             Int         @id @default(autoincrement())
+  digestId       Int
+  sourceId       Int
+  title          String
+  summary        String      @db.Text
+  url            String
+  imageUrl       String?
+  sourceName     String
+  category       String
+  publishedAt    DateTime
+  relevanceScore Float
+  coverageCount  Int         @default(1)
+  createdAt      DateTime    @default(now())
+  digest         DailyDigest @relation(fields: [digestId], references: [id], onDelete: Cascade)
+  source         RssSource   @relation(fields: [sourceId], references: [id])
+
+  @@index([digestId])
+  @@index([category])
+  @@index([relevanceScore])
+}
+
+model FetchLog {
+  id            Int       @id @default(autoincrement())
+  sourceId      Int
+  fetchedAt     DateTime  @default(now())
+  articlesFound Int       @default(0)
+  articlesUsed  Int       @default(0)
+  status        String
+  errorMessage  String?
+  durationMs    Int?
+  source        RssSource @relation(fields: [sourceId], references: [id])
+
+  @@index([sourceId])
+  @@index([fetchedAt])
+}

@@ -1,0 +1,26 @@
+{
+  "name": "resumen-del-dia",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter server dev\" \"pnpm --filter client dev\"",
+    "build": "pnpm --filter client build && pnpm --filter server build",
+    "db:migrate": "pnpm --filter db prisma migrate dev",
+    "db:seed": "pnpm --filter db prisma db seed",
+    "db:studio": "pnpm --filter db prisma studio",
+    "lint": "eslint apps --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}
