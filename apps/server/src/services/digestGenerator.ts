@@ -4,7 +4,7 @@ import { fetchAllFeeds } from './feedFetcher.js'
 import { deduplicate } from './deduplicator.js'
 import { detectCategory } from './categoryDetector.js'
 import { scoreAndSelect } from './relevanceScorer.js'
-import type { DailyDigest, NewsArticle } from '@resumen/db'
+import type { DailyDigest, NewsArticle } from '@prisma/client'
 
 let isGenerating = false
 

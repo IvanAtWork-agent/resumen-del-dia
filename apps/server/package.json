@@ -14,7 +14,6 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@resumen/db": "workspace:*",
     "@prisma/client": "^5.22.0",
     "cheerio": "^1.0.0",
     "cors": "^2.8.5",
