@@ -1,6 +1,5 @@
 {
-  "buildCommand": "pnpm --filter client build",
-  "outputDirectory": "apps/client/dist",
   "installCommand": "pnpm install",
-  "framework": "vite"
+  "buildCommand": "pnpm --filter client build",
+  "outputDirectory": "apps/client/dist"
 }
