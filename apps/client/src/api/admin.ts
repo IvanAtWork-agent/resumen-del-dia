@@ -9,7 +9,7 @@ export async function getAdminStats(): Promise<AdminStats> {
 export async function generateDigest(force = false): Promise<DailyDigest> {
   const { data } = await apiClient.post<DailyDigest>(
     '/api/admin/digest/generate',
-    null,
+    {},
     { timeout: 120000, params: force ? { force: 'true' } : undefined }
   )
   return data

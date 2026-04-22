@@ -20,7 +20,7 @@ const corsOrigin =
 app.use(cors({ origin: corsOrigin }))
 
 // Middleware
-app.use(express.json())
+app.use(express.json({ strict: false }))
 app.use(morgan('dev'))
 
 // Routes
@@ -36,8 +36,8 @@ app.use(
     res: express.Response,
     _next: express.NextFunction
   ) => {
-    logger.error('Unhandled error:', err.message, err.stack)
-    res.status(500).json({ error: err.message ?? 'Error interno del servidor.' })
+    logger.error('Unhandled error:', err)
+    res.status(500).json({ error: 'Error interno del servidor.' })
   }
 )
 
