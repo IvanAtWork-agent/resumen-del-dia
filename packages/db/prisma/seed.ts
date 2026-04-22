@@ -89,8 +89,8 @@ const sources = [
     authorityWeight: 9,
   },
   {
-    name: 'DW Español',
-    url: 'https://rss.dw.com/rdf/rss-es-all',
+    name: 'Euronews Español',
+    url: 'https://es.euronews.com/rss?format=mrss&level=theme&name=news',
     category: 'internacional',
     authorityWeight: 8,
   },
