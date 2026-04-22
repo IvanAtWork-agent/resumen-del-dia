@@ -18,25 +18,6 @@ router.post('/digest/generate', async (req: Request, res: Response) => {
   }
 })
 
-// GET /api/admin/test-ai
-router.get('/test-ai', async (_req: Request, res: Response) => {
-  const key = process.env.GROQ_API_KEY
-  if (!key) return res.json({ ok: false, error: 'GROQ_API_KEY not set' })
-  try {
-    const Groq = (await import('groq-sdk')).default
-    const client = new Groq({ apiKey: key })
-    const completion = await client.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: 50,
-      messages: [{ role: 'user', content: 'Di "hola" en español.' }],
-    })
-    const text = completion.choices[0]?.message?.content
-    return res.json({ ok: true, response: text, keyPrefix: key.slice(0, 8) + '…' })
-  } catch (err) {
-    return res.json({ ok: false, error: String(err), keyPrefix: key.slice(0, 8) + '…' })
-  }
-})
-
 // GET /api/admin/sources
 router.get('/sources', async (_req: Request, res: Response) => {
   const sources = await prisma.rssSource.findMany({ orderBy: { name: 'asc' } })
