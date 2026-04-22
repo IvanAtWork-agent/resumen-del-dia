@@ -55,8 +55,8 @@ const sources = [
     authorityWeight: 8,
   },
   {
-    name: 'El Economista',
-    url: 'https://www.eleconomista.es/rss/rss.php',
+    name: 'El Mundo Economía',
+    url: 'https://www.elmundo.es/rss/economia.xml',
     category: 'economia',
     authorityWeight: 7,
   },
@@ -76,7 +76,7 @@ const sources = [
   },
   {
     name: 'El País Tecnología',
-    url: 'https://feeds.elpais.com/mrss-s/list/ep/site/elpais.com/section/tecnologia/portada',
+    url: 'https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/tecnologia/portada',
     category: 'tecnologia',
     authorityWeight: 8,
   },
