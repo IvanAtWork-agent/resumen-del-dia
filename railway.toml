@@ -3,7 +3,7 @@ builder = "NIXPACKS"
 buildCommand = "pnpm install --no-frozen-lockfile && pnpm --filter @resumen/db generate && pnpm --filter server build"
 
 [deploy]
-startCommand = "cd packages/db && npx prisma migrate deploy && cd ../.. && node apps/server/dist/index.js"
+startCommand = "cd packages/db && npx prisma migrate deploy && npx prisma db seed && cd ../.. && node apps/server/dist/index.js"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
