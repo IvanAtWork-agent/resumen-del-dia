@@ -1,10 +1,10 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import type { ScoredArticle } from './relevanceScorer.js'
 import { logger } from '../lib/logger.js'
 
 export async function generateAISummary(articles: ScoredArticle[]): Promise<string | null> {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    logger.warn('ANTHROPIC_API_KEY not set — skipping AI summary')
+  if (!process.env.GEMINI_API_KEY) {
+    logger.warn('GEMINI_API_KEY not set — skipping AI summary')
     return null
   }
 
@@ -31,14 +31,10 @@ export async function generateAISummary(articles: ScoredArticle[]): Promise<stri
   })
 
   try {
-    const client = new Anthropic()
-    const message = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 500,
-      messages: [
-        {
-          role: 'user',
-          content: `Eres el editor de "El Resumen del Día", un periódico digital español de referencia.
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+
+    const prompt = `Eres el editor de "El Resumen del Día", un periódico digital español de referencia.
 
 Escribe el briefing del ${today} basándote en las noticias que te adjunto.
 Estructura exacta (sin cabeceras markdown, solo texto):
@@ -49,13 +45,11 @@ Estructura exacta (sin cabeceras markdown, solo texto):
 Tono: riguroso, conciso, periodístico. Máximo 200 palabras en total.
 
 Noticias del día:
-${articleList}`,
-        },
-      ],
-    })
+${articleList}`
 
-    const block = message.content[0]
-    return block.type === 'text' ? block.text : null
+    const result = await model.generateContent(prompt)
+    const text = result.response.text()
+    return text || null
   } catch (err) {
     logger.error('AI summary generation failed:', err)
     return null
