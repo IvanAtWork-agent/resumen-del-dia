@@ -31,7 +31,6 @@ router.get('/test-ai', async (_req: Request, res: Response) => {
         summary: 'La entidad justifica la medida por la persistente inflación.',
         url: 'https://example.com', imageUrl: null,
         publishedAt: new Date(), relevanceScore: 80, coverageCount: 3,
-        dedupKey: '', category: 'economia',
       },
     ])
     return res.json({ ok: !!result, summary: result, keyPrefix: key.slice(0, 8) + '…' })
