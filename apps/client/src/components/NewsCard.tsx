@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { NewsArticle } from '../types'
 
 const CATEGORY_BADGE: Record<string, string> = {
@@ -30,6 +31,37 @@ const CATEGORY_LABEL: Record<string, string> = {
   general: 'General',
 }
 
+function ArticleImage({
+  imageUrl,
+  placeholderClass,
+  featured,
+}: {
+  imageUrl: string | null
+  placeholderClass: string
+  featured: boolean
+}) {
+  const [failed, setFailed] = useState(false)
+  const sizeClass = featured ? 'text-4xl' : 'text-3xl'
+
+  if (imageUrl && !failed) {
+    return (
+      <img
+        src={imageUrl}
+        alt=""
+        className="w-full aspect-video object-cover"
+        loading="lazy"
+        onError={() => setFailed(true)}
+      />
+    )
+  }
+
+  return (
+    <div className={`w-full aspect-video flex items-center justify-center ${placeholderClass}`}>
+      <span className={`${sizeClass} opacity-30`}>📰</span>
+    </div>
+  )
+}
+
 function formatTimeAgo(dateStr: string): string {
   const diffMs = Date.now() - new Date(dateStr).getTime()
   const diffMins = Math.floor(diffMs / 60000)
@@ -54,18 +86,7 @@ export default function NewsCard({ article, isFeatured = false }: Props) {
     return (
       <article className="bg-[#FFFFFF] dark:bg-[#1E1D1B] border border-[#E5E2DC] dark:border-[#2E2D2A] rounded-lg overflow-hidden hover:shadow-md transition-shadow">
         <div className="relative">
-          {article.imageUrl ? (
-            <img
-              src={article.imageUrl}
-              alt=""
-              className="w-full aspect-video object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <div className={`w-full aspect-video flex items-center justify-center ${placeholderClass}`}>
-              <span className="text-4xl opacity-30">📰</span>
-            </div>
-          )}
+          <ArticleImage imageUrl={article.imageUrl} placeholderClass={placeholderClass} featured={true} />
           <span className="absolute top-3 right-3 bg-[#C41E3A] dark:bg-[#E8304A] text-white text-xs font-bold px-2 py-1 rounded">
             DESTACADO
           </span>
@@ -105,18 +126,7 @@ export default function NewsCard({ article, isFeatured = false }: Props) {
 
   return (
     <article className="bg-[#FFFFFF] dark:bg-[#1E1D1B] border border-[#E5E2DC] dark:border-[#2E2D2A] rounded-lg overflow-hidden hover:shadow-md transition-shadow flex flex-col">
-      {article.imageUrl ? (
-        <img
-          src={article.imageUrl}
-          alt=""
-          className="w-full aspect-video object-cover"
-          loading="lazy"
-        />
-      ) : (
-        <div className={`w-full aspect-video flex items-center justify-center ${placeholderClass}`}>
-          <span className="text-3xl opacity-30">📰</span>
-        </div>
-      )}
+      <ArticleImage imageUrl={article.imageUrl} placeholderClass={placeholderClass} featured={false} />
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-center justify-between gap-2 mb-2">
           <span className={`text-xs font-semibold px-2 py-0.5 rounded ${badgeClass}`}>
