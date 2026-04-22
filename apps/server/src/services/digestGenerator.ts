@@ -17,7 +17,7 @@ function utcToday(): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
 }
 
-export async function generate(): Promise<DailyDigest & { articles: NewsArticle[] }> {
+export async function generate(force = false): Promise<DailyDigest & { articles: NewsArticle[] }> {
   if (isGenerating) throw new Error('Generation already in progress')
   isGenerating = true
 
@@ -29,7 +29,7 @@ export async function generate(): Promise<DailyDigest & { articles: NewsArticle[
       include: { articles: { orderBy: { relevanceScore: 'desc' } } },
     })
 
-    if (existing?.status === 'complete') {
+    if (existing?.status === 'complete' && !force) {
       logger.info('Digest for today already complete — skipping generation')
       return existing
     }

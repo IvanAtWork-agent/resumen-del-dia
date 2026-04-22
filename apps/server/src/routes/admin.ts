@@ -5,12 +5,13 @@ import { generate, getIsGenerating } from '../services/digestGenerator.js'
 const router = Router()
 
 // POST /api/admin/digest/generate
-router.post('/digest/generate', async (_req: Request, res: Response) => {
+router.post('/digest/generate', async (req: Request, res: Response) => {
   if (getIsGenerating()) {
     return res.status(409).json({ error: 'La generación ya está en curso. Inténtalo en unos minutos.' })
   }
   try {
-    const digest = await generate()
+    const force = req.query.force === 'true' || req.body?.force === true
+    const digest = await generate(force)
     return res.json(digest)
   } catch (err) {
     return res.status(500).json({ error: String(err) })

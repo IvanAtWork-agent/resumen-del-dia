@@ -29,7 +29,7 @@ export default function AdminDashboard() {
     setGenResult(null)
     setGenError(null)
     try {
-      const digest = await generateDigest()
+      const digest = await generateDigest(true)
       setGenResult(`✅ Resumen generado: ${digest.totalArticles} artículos (estado: ${digest.status})`)
       refresh()
     } catch (err: unknown) {
