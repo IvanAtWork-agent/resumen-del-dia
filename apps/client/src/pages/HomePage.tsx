@@ -5,6 +5,7 @@ import NewsCard from '../components/NewsCard'
 import SkeletonCard from '../components/SkeletonCard'
 import CategoryFilterBar from '../components/CategoryFilterBar'
 import DigestStatusBanner from '../components/DigestStatusBanner'
+import AISummaryCard from '../components/AISummaryCard'
 import Footer from '../components/Footer'
 import { useTodayDigest } from '../hooks/useTodayDigest'
 import type { NewsArticle } from '../types'
@@ -91,6 +92,11 @@ export default function HomePage() {
               <SkeletonCard key={i} />
             ))}
           </div>
+        )}
+
+        {/* AI Briefing */}
+        {!loading && activeCategory === 'all' && digest?.aiSummary && (
+          <AISummaryCard summary={digest.aiSummary} date={digest.date} />
         )}
 
         {/* Content */}

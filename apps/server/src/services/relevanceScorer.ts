@@ -5,13 +5,13 @@ export interface ScoredArticle extends RepresentativeArticle {
 }
 
 const CATEGORY_CAPS: Record<string, number> = {
-  politica: 7,
-  internacional: 6,
-  economia: 5,
-  sociedad: 4,
+  politica: 3,
+  internacional: 3,
+  economia: 3,
+  sociedad: 2,
   tecnologia: 3,
   tendencias: 2,
-  general: 5,
+  general: 3,
 }
 
 function recencyBonus(publishedAt: Date): number {
@@ -56,5 +56,5 @@ export function scoreAndSelect(articles: RepresentativeArticle[]): ScoredArticle
 
   capped.sort((a, b) => b.relevanceScore - a.relevanceScore)
 
-  return capped.slice(0, 25)
+  return capped
 }

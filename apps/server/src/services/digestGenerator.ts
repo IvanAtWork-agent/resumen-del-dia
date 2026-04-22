@@ -4,6 +4,7 @@ import { fetchAllFeeds } from './feedFetcher.js'
 import { deduplicate } from './deduplicator.js'
 import { detectCategory } from './categoryDetector.js'
 import { scoreAndSelect } from './relevanceScorer.js'
+import { generateAISummary } from './aiSummaryGenerator.js'
 import type { DailyDigest, NewsArticle } from '@prisma/client'
 
 let isGenerating = false
@@ -65,6 +66,9 @@ export async function generate(force = false): Promise<DailyDigest & { articles:
       }
     }
 
+    const aiSummary = scored.length > 0 ? await generateAISummary(scored) : null
+    if (aiSummary) logger.info('AI summary generated successfully')
+
     const digest = await prisma.$transaction(async (tx) => {
       const d = await tx.dailyDigest.create({
         data: {
@@ -72,6 +76,7 @@ export async function generate(force = false): Promise<DailyDigest & { articles:
           totalArticles: scored.length,
           status: status === 'error' && scored.length > 0 ? 'partial' : status,
           errorMessage,
+          aiSummary,
         },
       })
 

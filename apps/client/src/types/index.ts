@@ -33,6 +33,7 @@ export interface DailyDigest {
   totalArticles: number
   status: 'complete' | 'partial' | 'error'
   errorMessage: string | null
+  aiSummary: string | null
   articles: NewsArticle[]
 }
 

@@ -28,6 +28,7 @@ model DailyDigest {
   totalArticles Int
   status        String
   errorMessage  String?
+  aiSummary     String?       @db.Text
   articles      NewsArticle[]
 }
 
