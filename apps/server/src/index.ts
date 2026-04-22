@@ -36,8 +36,8 @@ app.use(
     res: express.Response,
     _next: express.NextFunction
   ) => {
-    logger.error('Unhandled error:', err.message)
-    res.status(500).json({ error: 'Error interno del servidor.' })
+    logger.error('Unhandled error:', err.message, err.stack)
+    res.status(500).json({ error: err.message ?? 'Error interno del servidor.' })
   }
 )
 
