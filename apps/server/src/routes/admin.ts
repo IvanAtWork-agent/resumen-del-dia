@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import { prisma } from '../lib/prisma.js'
 import { generate, getIsGenerating } from '../services/digestGenerator.js'
+import { generateAISummary } from '../services/aiSummaryGenerator.js'
 
 const router = Router()
 
@@ -15,6 +16,27 @@ router.post('/digest/generate', async (req: Request, res: Response) => {
     return res.json(digest)
   } catch (err) {
     return res.status(500).json({ error: String(err) })
+  }
+})
+
+// GET /api/admin/test-ai
+router.get('/test-ai', async (_req: Request, res: Response) => {
+  const key = process.env.GEMINI_API_KEY
+  if (!key) return res.json({ ok: false, error: 'GEMINI_API_KEY not set' })
+  try {
+    const result = await generateAISummary([
+      {
+        sourceId: 0, sourceName: 'Test', sourceCategory: 'economia', sourceWeight: 8,
+        title: 'El Banco Central sube los tipos de interés al 4%',
+        summary: 'La entidad justifica la medida por la persistente inflación.',
+        url: 'https://example.com', imageUrl: null,
+        publishedAt: new Date(), relevanceScore: 80, coverageCount: 3,
+        dedupKey: '', category: 'economia',
+      },
+    ])
+    return res.json({ ok: !!result, summary: result, keyPrefix: key.slice(0, 8) + '…' })
+  } catch (err) {
+    return res.json({ ok: false, error: String(err) })
   }
 })
 
