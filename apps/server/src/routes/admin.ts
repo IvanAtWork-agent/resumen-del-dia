@@ -25,7 +25,7 @@ router.get('/test-ai', async (_req: Request, res: Response) => {
   try {
     const { GoogleGenerativeAI } = await import('@google/generative-ai')
     const genAI = new GoogleGenerativeAI(key)
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
     const result = await model.generateContent('Di "hola" en español.')
     const text = result.response.text()
     return res.json({ ok: true, response: text, keyPrefix: key.slice(0, 8) + '…' })
