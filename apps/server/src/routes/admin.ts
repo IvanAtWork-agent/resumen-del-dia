@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { prisma } from '../lib/prisma.js'
 import { generate, getIsGenerating } from '../services/digestGenerator.js'
-import { generateAISummary } from '../services/aiSummaryGenerator.js'
 
 const router = Router()
 
@@ -24,18 +23,14 @@ router.get('/test-ai', async (_req: Request, res: Response) => {
   const key = process.env.GEMINI_API_KEY
   if (!key) return res.json({ ok: false, error: 'GEMINI_API_KEY not set' })
   try {
-    const result = await generateAISummary([
-      {
-        sourceId: 0, sourceName: 'Test', sourceCategory: 'economia', sourceWeight: 8,
-        title: 'El Banco Central sube los tipos de interés al 4%',
-        summary: 'La entidad justifica la medida por la persistente inflación.',
-        url: 'https://example.com', imageUrl: null,
-        publishedAt: new Date(), relevanceScore: 80, coverageCount: 3,
-      },
-    ])
-    return res.json({ ok: !!result, summary: result, keyPrefix: key.slice(0, 8) + '…' })
+    const { GoogleGenerativeAI } = await import('@google/generative-ai')
+    const genAI = new GoogleGenerativeAI(key)
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const result = await model.generateContent('Di "hola" en español.')
+    const text = result.response.text()
+    return res.json({ ok: true, response: text, keyPrefix: key.slice(0, 8) + '…' })
   } catch (err) {
-    return res.json({ ok: false, error: String(err) })
+    return res.json({ ok: false, error: String(err), keyPrefix: key.slice(0, 8) + '…' })
   }
 })
 
