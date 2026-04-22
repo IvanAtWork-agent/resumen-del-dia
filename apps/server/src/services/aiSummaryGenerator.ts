@@ -1,10 +1,10 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import Groq from 'groq-sdk'
 import type { ScoredArticle } from './relevanceScorer.js'
 import { logger } from '../lib/logger.js'
 
 export async function generateAISummary(articles: ScoredArticle[]): Promise<string | null> {
-  if (!process.env.GEMINI_API_KEY) {
-    logger.warn('GEMINI_API_KEY not set — skipping AI summary')
+  if (!process.env.GROQ_API_KEY) {
+    logger.warn('GROQ_API_KEY not set — skipping AI summary')
     return null
   }
 
@@ -31,25 +31,34 @@ export async function generateAISummary(articles: ScoredArticle[]): Promise<stri
   })
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
-
-    const prompt = `Eres el editor de "El Resumen del Día", un periódico digital español de referencia.
-
-Escribe el briefing del ${today} basándote en las noticias que te adjunto.
+    const client = new Groq({ apiKey: process.env.GROQ_API_KEY })
+    const completion = await client.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 500,
+      messages: [
+        {
+          role: 'system',
+          content:
+            'Eres el editor de "El Resumen del Día", un periódico digital español de referencia. Escribes en español con un tono riguroso, conciso y periodístico.',
+        },
+        {
+          role: 'user',
+          content: `Escribe el briefing del ${today} basándote en las noticias que te adjunto.
 Estructura exacta (sin cabeceras markdown, solo texto):
 - Una frase de apertura que capture el tono del día (máx. 2 líneas).
 - Sección "💼 Economía": 2-3 puntos clave, cada uno empezando con "•".
 - Sección "💻 Tecnología": 1-2 puntos clave, cada uno empezando con "•".
 - Si hay otra noticia muy relevante de otra categoría, añade una sección "📌 Destacado" con 1 punto.
-Tono: riguroso, conciso, periodístico. Máximo 200 palabras en total.
+Máximo 200 palabras en total.
 
 Noticias del día:
-${articleList}`
+${articleList}`,
+        },
+      ],
+    })
 
-    const result = await model.generateContent(prompt)
-    const text = result.response.text()
-    return text || null
+    const text = completion.choices[0]?.message?.content
+    return text ?? null
   } catch (err) {
     logger.error('AI summary generation failed:', err)
     return null
