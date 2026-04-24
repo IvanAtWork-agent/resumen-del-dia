@@ -1,11 +1,27 @@
 import cron from 'node-cron'
 import { generate, getIsGenerating } from '../services/digestGenerator.js'
 import { logger } from '../lib/logger.js'
-import { prisma } from '../lib/prisma.js'
+import { prisma } from '../lib/prisma.js' // used in fallback-08:00 check
 
 function utcToday(): Date {
   const now = new Date()
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+}
+
+function getMadridHour(): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Europe/Madrid',
+    hour: 'numeric',
+    hourCycle: 'h23',
+  }).formatToParts(new Date())
+  return parseInt(parts.find((p) => p.type === 'hour')?.value ?? '0', 10)
+}
+
+async function startupCheck() {
+  if (getMadridHour() < 7) return
+  // Delegate entirely to generate() which already skips if today is complete
+  // and now handles Neon cold-start retries internally.
+  await runGeneration('startup')
 }
 
 async function runGeneration(label: string) {
@@ -50,4 +66,7 @@ export function registerJobs() {
   )
 
   logger.info('Cron jobs registered: primary at 07:00 Europe/Madrid, fallback at 08:00 Europe/Madrid')
+
+  // If the server restarted after the 07:00 window, catch up immediately
+  void startupCheck()
 }

@@ -18,11 +18,30 @@ function utcToday(): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
 }
 
+// Neon free-tier suspends compute after inactivity; the first query on a cold
+// start can fail with a connection error. Ping with retries before any real work.
+async function ensureDbReady(): Promise<void> {
+  const maxAttempts = 3
+  const delayMs = 4000
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      await prisma.$queryRaw`SELECT 1`
+      return
+    } catch (err) {
+      if (i === maxAttempts - 1) throw err
+      logger.warn(`[db] Connection attempt ${i + 1}/${maxAttempts} failed (Neon cold start?) — retrying in ${delayMs}ms`)
+      await new Promise((r) => setTimeout(r, delayMs))
+    }
+  }
+}
+
 export async function generate(force = false): Promise<DailyDigest & { articles: NewsArticle[] }> {
   if (isGenerating) throw new Error('Generation already in progress')
   isGenerating = true
 
   try {
+    await ensureDbReady()
+
     const todayDate = utcToday()
 
     const existing = await prisma.dailyDigest.findUnique({

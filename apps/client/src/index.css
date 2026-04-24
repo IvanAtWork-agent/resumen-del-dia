@@ -5,9 +5,17 @@
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply bg-[#FAFAF8] text-[#1A1916] dark:bg-[#141412] dark:text-[#F0EDE8];
+    @apply bg-[#F8F6F3] text-[#0F0E0D] dark:bg-[#0D0C0B] dark:text-[#F2EFE9];
+  }
+
+  :focus-visible {
+    outline: 2px solid #C41E3A;
+    outline-offset: 2px;
+    border-radius: 2px;
   }
 }
